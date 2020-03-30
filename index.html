@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Holdiday API</title>
+    <meta charset="utf-8" />
+    <script>
+        function getHoliday() {
+			/* Step 1: Make instance of request object...
+			...to make HTTP request after page is loaded*/
+            request = new XMLHttpRequest();
+            console.log("1 - request object created");
+
+            // Step 2: Set the URL for the AJAX request to be the JSON file
+            var month = document.getElementById("usrmonth").value
+            var day = document.getElementById("usrday").value
+            var year = document.getElementById("usryear").value
+            request.open("GET", "https://calendarific.com/api/v2/holidays?&api_key=924f48aef05de65fc637aa0859b40a4f24f90765&country=US&year=" + year + "&month=" + month + "&day=" + day, true);
+
+            console.log("2 - opened request file");
+
+            // Step 3: set up event handler/callback
+
+            request.onreadystatechange = function () {
+                console.log("3 - readystatechange event fired.");
+
+                if (request.readyState == 4 && request.status == 200) {
+
+                    // Step 5: wait for done + success
+
+                    result = request.responseText;
+                    calendar = JSON.parse(result);
+
+                    if (calendar.response.holidays[0] == null) {
+                        document.getElementById("data").innerHTML = "There is no holiday on " + month + "/" + day;
+                    } else {
+                        document.getElementById("data").innerHTML = "The holiday on " + month +"/" + day + " is " + calendar.response.holidays[0].name;
+                    document.getElementById("desc").innerHTML = calendar.response.holidays[0].description;
+                    }
+                
+                }
+                else if (request.readyState == 4 && request.status != 200) {
+                    document.getElementById("data").innerHTML = "Something is wrong";
+                }
+
+                else if (request.readyState == 3) {
+                    document.getElementById("data").innerHTML = "Too soon!  Try again";
+                }
+
+                else if (request.status == 429) {
+                    document.getElementById("data").innerHTML = "API subscription terminated."
+                }
+            }
+            // Step 4: fire off the HTTP request
+            request.send();
+            console.log("4 - Request sent");
+        }
+    </script>
+</head>
+
+
+<body>
+
+    <h1>Holiday</h1>
+    <form id="form0">
+        <label for="usrmonth">Enter a month [1-12]:</label>
+        <input type="text" id="usrmonth" name="usrmonth">
+        <label for="usrday">Enter a day [1-31]:</label>
+        <input type="text" id="usrday" name="usrday">
+        <label for="usryear">Enter a year:</label>
+        <input type="text" id="usryear" name="usryear">
+        <input type="Button" value="submit" onclick="getHoliday()">
+    </form>
+    
+    <div id="data">Loading...</div>
+    <div id="desc"> </div>
+
+    <br>
+    <br>
+    <div>API Used: Calendarific API</div>
+
+    <br>
+    <br>
+    <div>What it does:</div>
+    <div>
+        This API is essentially a database that stores holidays. 
+        You send in a request and it returns a list of holidays depending on what
+        you requested (day, month, year, observance...).
+    </div>
+    <br>
+    <br>
+
+    <div>Found at: https://calendarific.com/api-documentation</div>
+
+    <br>
+    <br>
+    <div>Options I used:</div>
+    <div>
+        <div>Country: I specified the country as US (give US specific holidays)</div>
+        <div>Year: It takes the year from the form and uses it in the API request</div>
+        <div>Month: It takes the month from the form and uses it in the API request</div>
+        <div>Day: It takes the day from the form and uses it in the API request</div>
+    </div>
+    <br>
+    <br>
+    <div>Uses:</div>
+    <div>
+        <div>Used by travel websites like TripAdvisor to calculate rates based on holidays.</div>
+        <div> It could also be used by a calendar website to automatically put holidays in your calendar</div>
+    </div>
+</body>
+
+</html>
